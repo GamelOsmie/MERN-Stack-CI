@@ -45,3 +45,26 @@ CI to run GitHub actions for my MERN stack apps
             working-directory: ./App-name/client
             run: npm run build
 
+            - name: Update branch status
+              run: |
+                if [ ${{ job.status }} == 'success' ]; then
+                  curl -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+                    -H "Accept: application/vnd.github.v3+json" \
+                    "https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }}" \
+                    -d '{
+                      "state": "success",
+                      "target_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+                      "description": "All tests passed",
+                      "context": "CI Tests"
+                    }'
+                else
+                  curl -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+                    -H "Accept: application/vnd.github.v3+json" \
+                    "https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }}" \
+                    -d '{
+                      "state": "failure",
+                      "target_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+                      "description": "Some tests failed",
+                      "context": "CI Tests"
+                    }'
+
