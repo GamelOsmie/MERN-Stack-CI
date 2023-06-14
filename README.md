@@ -44,6 +44,10 @@ CI to run GitHub actions for my MERN stack apps
           - name: Build client app
             working-directory: ./App-name/client
             run: npm run build
+            
+          - name: Copy client build to server public folder
+            working-directory: ./App-name/client
+            run: cp -R build/ ../server/public/
 
             - name: Update branch status
                if: always()
